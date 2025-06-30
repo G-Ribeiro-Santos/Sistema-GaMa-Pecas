@@ -1,0 +1,61 @@
+@startuml
+'=== actors ==='
+left to right direction
+
+together actors{
+rectangle "Planejamento e Controle de Produção"{
+actor :Equipe de Cadastro: as EquipeCadastra
+actor :Equipe de Planejamento: as EquipePlaneja
+}
+rectangle "Operação"{
+actor :Operador de maquina: as EquipeOpera
+actor :Equipe de logística: as AuxLog
+}
+}
+
+'=== casos de uso ==='
+rectangle "Sistema"{
+
+rectangle "Produtos"{
+top to bottom direction
+(Cadastra produto) as CadProduto
+(Cria ficha técnica) as CadFicha
+}
+left to right direction
+rectangle "Materiais"{
+(Cadastra material) as CadMaterial
+(Vê estoque disponível) as VerMaterial
+}
+rectangle "Produção"{
+(Cria Ordem de produção) as CriaOP
+(Vê Ordem de produção) as VeOP
+(Movimenta OP) as MoveOP
+(Vê Ordem de Serviço) as VeOS
+(Cadastrar Ordem de Serviço) as CadOS
+}
+}
+
+'=== relações ==='
+MoveOP -[hidden]r- VeOS 
+
+EquipePlaneja -r- CriaOP
+EquipePlaneja -- VerMaterial
+EquipeCadastra -- CadFicha
+EquipeCadastra -- CadMaterial
+EquipeCadastra -- CadOS
+EquipeCadastra -- CadProduto
+
+AuxLog -- MoveOP
+AuxLog -- VeOP
+EquipeOpera -- VeOS
+EquipeOpera  -- VeOP
+CadProduto <-d- CadFicha: <<Use>>
+
+CriaOP --> CadProduto
+VeOP <-r- MoveOP: <<Use>>
+CadOS <-u- VeOS: <<Use>>
+VeOP -> CriaOP: <<Use>>
+
+CadMaterial <-d- CadFicha: <<Use>> 
+
+@enduml
