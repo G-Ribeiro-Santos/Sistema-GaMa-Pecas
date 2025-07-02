@@ -1,9 +1,17 @@
 CREATE DATABASE IF NOT EXISTS GamaPecas;
 USE GamaPecas;
 
+CREATE TABLE Usuario (
+    login_usuario VARCHAR(50) NOT NULL PRIMARY KEY,
+    senha_usuario VARCHAR(50) NOT NULL
+);
 
+INSERT INTO Usuario(login_usuario, senha_usuario)
+VALUES 
+("dummy1", "dummy1"),
+("dummy2", "dummy2");
 
-
+SELECT * FROM Usuario;
 
 CREATE TABLE Produtos (
     id_produto INT AUTO_INCREMENT PRIMARY KEY,
@@ -11,25 +19,20 @@ CREATE TABLE Produtos (
     Especificacoes_tecnicas VARCHAR(1000),
     Documentacao_status VARCHAR(10) CHECK (Documentacao_status IN ('COMPLETO', 'INCOMPLETO', 'PENDENTE'))
 );
+INSERT INTO Produtos(nome_produto, Especificacoes_tecnicas, Documentacao_status)
+VALUES
+("Aço AISI 416", "BLABLABLA", "COMPLETO"),
+("Aço AISI 404", "blabla2","INCOMPLETO");
 
-
+SELECT * FROM Produtos;
 CREATE TABLE Materiais (
     id_Material INT AUTO_INCREMENT PRIMARY KEY,
     nome_material VARCHAR(50) NOT NULL,
-    Ponto_ressuprimento FLOAT NOT NULL,
     Nivel_estoque FLOAT NOT NULL,
     Unidade_estoque VARCHAR(7),
+    Ponto_ressuprimento FLOAT NOT NULL,
     Status_Obsolescencia BOOLEAN NOT NULL
 );
-
-
-CREATE TABLE Pedidos (
-    id_Pedido INT AUTO_INCREMENT PRIMARY KEY,
-    id_Fornecedor INT NOT NULL,
-    Status_Pedido VARCHAR(20) CHECK (Status_Pedido IN ('ABERTO', 'ENVIADO', 'RECEBIDO PARCIAL', 'RECEBIDO', 'CANCELADO')),
-    FOREIGN KEY (id_Fornecedor) REFERENCES Fornecedores(id_Fornecedor)
-);
-
 
 
 CREATE TABLE Maquinas (
@@ -47,7 +50,7 @@ CREATE TABLE Processos (
 );
 
 
-CREATE TABLE Ordens_Producao (
+CREATE TABLE Ordens_Producao (	
     id_OP INT AUTO_INCREMENT PRIMARY KEY,
     id_Produto INT NOT NULL,
     Quantidade_Produzir FLOAT NOT NULL,
@@ -79,12 +82,9 @@ CREATE TABLE Ficha_Tecnica (
     FOREIGN KEY (id_Material) REFERENCES Materiais(id_Material)
 );
 
-
 CREATE TABLE Uso_Material_OP (
     id_OP INT NOT NULL,
-    id_Lote INT NOT NULL,
     Quantidade_Reservada FLOAT NOT NULL,
     Quantidade_Consumida FLOAT NOT NULL,
-    FOREIGN KEY (id_OP) REFERENCES Ordens_Producao(id_OP),
-    FOREIGN KEY (id_Lote) REFERENCES Lotes(id_Lote)
+    FOREIGN KEY (id_OP) REFERENCES Ordens_Producao(id_OP)
 );
