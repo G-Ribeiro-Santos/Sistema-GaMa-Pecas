@@ -13,18 +13,23 @@ VALUES
 
 SELECT * FROM Usuario;
 
+
 CREATE TABLE Produtos (
     id_produto INT AUTO_INCREMENT PRIMARY KEY,
     nome_produto VARCHAR(50) NOT NULL,
     Especificacoes_tecnicas VARCHAR(1000),
     Documentacao_status VARCHAR(10) CHECK (Documentacao_status IN ('COMPLETO', 'INCOMPLETO', 'PENDENTE'))
 );
+
 INSERT INTO Produtos(nome_produto, Especificacoes_tecnicas, Documentacao_status)
 VALUES
-("Aço AISI 416", "BLABLABLA", "COMPLETO"),
-("Aço AISI 404", "blabla2","INCOMPLETO");
+("Parafuso 20 x 4", "BLABLABLA", "COMPLETO"),
+("Parafuso aço 35 x 8", "blabla2","INCOMPLETO");
+
+UPDATE Produtos SET nome_produto = 'parafuso 20x4 Aço AISI 312' WHERE id_produto = 1;
 
 SELECT * FROM Produtos;
+
 CREATE TABLE Materiais (
     id_Material INT AUTO_INCREMENT PRIMARY KEY,
     nome_material VARCHAR(50) NOT NULL,
@@ -33,13 +38,19 @@ CREATE TABLE Materiais (
     Ponto_ressuprimento FLOAT NOT NULL,
     Status_Obsolescencia BOOLEAN NOT NULL
 );
-
+INSERT INTO Materiais(nome_material, Nivel_estoque, Unidade_estoque, Ponto_ressuprimento, Status_Obsolescencia)
+VALUES
+("aço aisi 316", 12.3, "Kg", 5, true),
+("aço aisi 412", 12.3, "Kg", 2, false);
+SELECT * FROM Materiais;
 
 CREATE TABLE Maquinas (
     id_Maquina INT AUTO_INCREMENT PRIMARY KEY,
     Nome_Maquina VARCHAR(255) NOT NULL,
     Disponibilidade VARCHAR(20) CHECK (Disponibilidade IN ('MANUTENCAO', 'OPERACIONAL', 'PARADA', 'INDISPONIVEL'))
 );
+
+SELECT * FROM Maquinas;
 
 
 CREATE TABLE Processos (
@@ -49,7 +60,6 @@ CREATE TABLE Processos (
     FOREIGN KEY (id_Maquina) REFERENCES Maquinas(id_Maquina)
 );
 
-
 CREATE TABLE Ordens_Producao (	
     id_OP INT AUTO_INCREMENT PRIMARY KEY,
     id_Produto INT NOT NULL,
@@ -58,7 +68,6 @@ CREATE TABLE Ordens_Producao (
     Volume_Produzido FLOAT NOT NULL,
     FOREIGN KEY (id_Produto) REFERENCES Produtos(id_produto)
 );
-
 
 CREATE TABLE Ordens_Servico (
     id_OS INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,7 +82,6 @@ CREATE TABLE Ordens_Servico (
     FOREIGN KEY (Recurso_ID) REFERENCES Maquinas(id_Maquina)
 );
 
-
 CREATE TABLE Ficha_Tecnica (
     id_Produto INT NOT NULL,
     id_Material INT NOT NULL,
@@ -87,4 +95,9 @@ CREATE TABLE Uso_Material_OP (
     Quantidade_Reservada FLOAT NOT NULL,
     Quantidade_Consumida FLOAT NOT NULL,
     FOREIGN KEY (id_OP) REFERENCES Ordens_Producao(id_OP)
+);
+
+CREATE TABLE logs_sistema (
+	tipo_de_movimentacao varchar(50),
+    data_da_movimentacao datetime
 );

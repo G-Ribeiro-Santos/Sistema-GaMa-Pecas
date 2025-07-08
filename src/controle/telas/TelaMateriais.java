@@ -11,12 +11,9 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import database.DBQuery;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import models.Materiais;
+
 
 public class TelaMateriais {
     private JFrame janela = new JFrame("Materials");
@@ -31,13 +28,12 @@ public class TelaMateriais {
     private JLabel textoNivelEstoque = new JLabel("Disponível:");
     private JLabel textoPontoRessuprimento = new JLabel("Ponto crítico:");
     private JTextField campoID = new JTextField();
+    private JLabel campoIDEstatico = new JLabel("");
     private JTextField campoNome = new JTextField();
     private JTextField campoUnidadeEstoque = new JTextField();
     private JTextField campoNivelEstoque = new JTextField();
     private JTextField campoPontoRessuprimento = new JTextField();
-    private JComboBox<String> comboObsoleto = new JComboBox<>(new String[] {
-        "...", "DESATIVADO", "OK"
-    });
+    private JComboBox<String> comboObsoleto = new JComboBox<>(new String[] {"DESATIVADO", "OK"});
     private JLabel titulo = new JLabel("Materiais");
 
     //botoes
@@ -48,15 +44,11 @@ public class TelaMateriais {
     private JButton botaoSalvar = new JButton("Salvar");
     private JButton botaoCancelar = new JButton("Cancelar");
     private JButton botaoLimpar = new JButton("Limpar");
-
-    //sql
-	private DBQuery tabela = new DBQuery("Materials", "id_Material,nome_Material,Especificacoes_tecnicas,Documentacao_Obsoleto", "id_Material");
-	private String pesquisa = "SELECT * FROM Materials";
 	private int IDMaterialDigitado;
 
     public TelaMateriais() {
 
-        this.janela.setBounds(200, 200, 600, 370);
+        janela.setBounds(200, 200, 600, 370);
         this.janela.setLayout(null);
         this.janela.getContentPane().setBackground(Color.LIGHT_GRAY);
         this.janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -85,6 +77,7 @@ public class TelaMateriais {
         this.textoObsoleto.setFont(fonte2);
         
         this.campoID.setBounds(230, 60, 300, 25);
+        this.campoIDEstatico.setBounds(230, 60, 300, 25);
         this.campoNome.setBounds(230, 100, 300, 25);
         this.campoNome.setEditable(false);
         this.comboObsoleto.setBounds(230, 200, 150, 25);
@@ -121,6 +114,7 @@ public class TelaMateriais {
         this.janela.add(campoNome);
         this.janela.add(comboObsoleto);
         this.janela.add(campoID);
+        this.janela.add(campoIDEstatico);
         this.janela.add(campoNivelEstoque);
         this.janela.add(campoUnidadeEstoque);
         this.janela.add(textoErro);
@@ -136,6 +130,7 @@ public class TelaMateriais {
         this.janela.add(botaoCancelar);
         this.janela.add(botaoSalvar);
 
+        //visibilidades dos botões
         this.botaoCriar.setVisible(true);
         this.botaoPesquisar.setVisible(true);
 
@@ -147,104 +142,220 @@ public class TelaMateriais {
         this.botaoSalvar.setVisible(false);
         
         this.textoErro.setVisible(false);
-		this.botaoCriar.addActionListener(new ActionListener() {
-			@Override					
-			public void actionPerformed(ActionEvent e) {
-				botaoCriar.setVisible(false);
-				botaoPesquisar.setVisible(false);
-				textoIDMaterial.setVisible(false);
-				campoID.setVisible(false);
-				botaoSalvar.setVisible(true);
-				botaoCancelar.setVisible(true);
-		        campoNome.setEditable(true);
-			}
-		});
-
-		this.botaoEditar.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				botaoLimpar.setVisible(false);
-				botaoEditar.setVisible(false);
-				textoIDMaterial.setVisible(false);
-				campoID.setEditable(false);
-				botaoSalvar.setVisible(true);
-				botaoCancelar.setVisible(true);
-		        campoNome.setEditable(true);
-		        
-			}
-		});
-		
-		this.botaoCancelar.addActionListener(new ActionListener() {
-			@Override					
-			public void actionPerformed(ActionEvent e) {
-				botaoCriar.setVisible(true);
-				botaoPesquisar.setVisible(true);
-				textoIDMaterial.setVisible(true);
-				campoID.setVisible(true);
-				botaoSalvar.setVisible(false);
-				botaoCancelar.setVisible(false);
-				campoNome.setEditable(false);
-		        if(campoID.getText() == "") {
-		        campoNome.setText("");
-		        }else {
-		        	
-		        }
-			}
-		});
+        
+        
+   
 		this.campoID.addKeyListener(new KeyAdapter() {
 			public  void keyPressed(KeyEvent ke) {
-				String valorTotal = campoID.getText();
-				if((ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') ||  (ke.getKeyChar() == KeyEvent.VK_BACK_SPACE)) {
+				if(
+						(ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') ||  (ke.getKeyChar() == KeyEvent.VK_BACK_SPACE)
+						) {
 					campoID.setEditable(true);
 				}else {
 					campoID.setEditable(false);
 				}
 			}
 		});
+		this.campoNivelEstoque.addKeyListener(new KeyAdapter() {
+			public  void keyPressed(KeyEvent ke) {
+				if(
+						(ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') ||  (ke.getKeyChar() == KeyEvent.VK_BACK_SPACE)
+						) {
+					campoNivelEstoque.setEditable(true);
+				}else {
+					campoNivelEstoque.setEditable(false);
+				}
+			}
+		});
+		this.campoPontoRessuprimento.addKeyListener(new KeyAdapter() {
+			public  void keyPressed(KeyEvent ke) {
+				if(
+						(ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') ||  (ke.getKeyChar() == KeyEvent.VK_BACK_SPACE)
+						) {
+					campoPontoRessuprimento.setEditable(true);
+				}else {
+					campoPontoRessuprimento.setEditable(false);
+				}
+			}
+		});
+		
+		this.botaoCriar.addActionListener(new ActionListener() {
+			@Override					
+			public void actionPerformed(ActionEvent e) {
+				campoID.setText("");
+				campoIDEstatico.setText("");
+				manejaMaterial();
+			}
+		});
+		
+		this.botaoEditar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				manejaMaterial();
+			}
+		});
+		
+		this.botaoCancelar.addActionListener(new ActionListener() {
+			@Override					
+			public void actionPerformed(ActionEvent e) {
+				if(campoID.getText().equals("") || campoIDEstatico.getText().equals("")) {
+					telaLimpa();
+				}else {					
+					exibeMaterial();
+					Materiais materialNaTela = new Materiais();
+		            IDMaterialDigitado = (int) Double.parseDouble(campoIDEstatico.getText());
+					materialNaTela.setIdMaterial(IDMaterialDigitado);
+					materialNaTela.buscaMaterial();
+					campoNome.setText(materialNaTela.getNomeMaterial());
+				}
+			}
+		});
+		
+		this.botaoLimpar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				telaLimpa();
+			}
+		});
 		
 		this.botaoPesquisar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-	            ResultSet rs = tabela.query(pesquisa);
 				if(campoID.getText().equals("")) {
-					System.out.print("erro aqio óia");
 					textoErro.setVisible(true);
 					return;
 				}else {
 					textoErro.setVisible(false);
 				}
+				Materiais materialNaTela = new Materiais();
 	            IDMaterialDigitado = (int) Double.parseDouble(campoID.getText());
-	            try {
-					while (rs.next()) {
-						if (rs.getInt("id_Material") == IDMaterialDigitado){
-					        campoID.setEditable(false);
-							botaoCriar.setVisible(false);
-							botaoPesquisar.setVisible(false);
-							botaoEditar.setVisible(true);
-							botaoLimpar.setVisible(true);
-							campoNome.setText(rs.getString("nome_Material"));
-							switch (rs.getString("Documentacao_Obsoleto")){
-							case "COMPLETO":
-								comboObsoleto.setSelectedIndex(1);
-								break;
-							case "INCOMPLETO":
-								comboObsoleto.setSelectedIndex(2);
-								break;
-							case "PENDENTE":
-								comboObsoleto.setSelectedIndex(3);
-								break;
-							default:
-								comboObsoleto.setSelectedIndex(0);
-								break;
-							}
-						}
-					}
-
-				} catch (SQLException e1) {
-		            e1.printStackTrace();
-				}		        
+	            materialNaTela.setIdMaterial(IDMaterialDigitado);
+				materialNaTela.buscaMaterial();
+				String nomeMaterialDigitado = materialNaTela.getNomeMaterial();
+				if(!(nomeMaterialDigitado == "" || nomeMaterialDigitado == null)) {
+					campoIDEstatico.setText(materialNaTela.getIdMaterial() + "");
+			        campoNome.setText(materialNaTela.getNomeMaterial());
+			        campoNivelEstoque.setText(materialNaTela.getNivelEstoque() + "");
+			        campoUnidadeEstoque.setText(materialNaTela.getUnidadeEstoque());
+			        campoPontoRessuprimento.setText(materialNaTela.getPontoRessuprimento() + "");
+			        comboObsoleto.setEnabled(true);
+			        comboObsoleto.setSelectedIndex(materialNaTela.getStatusObsolescencia() ? 1 : 0);
+					exibeMaterial();
+				}else {
+					textoErro.setVisible(true);
+				}
 			}
 		});
+		
+		this.botaoSalvar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Materiais materialNaTela = new Materiais();
+				materialNaTela.setNomeMaterial(campoNome.getText());
+				materialNaTela.setNivelEstoque((float) Double.parseDouble(campoNivelEstoque.getText()));
+				materialNaTela.setUnidadeEstoque(campoUnidadeEstoque.getText());
+				materialNaTela.setPontoRessuprimento((float) Double.parseDouble(campoPontoRessuprimento.getText()));
+				materialNaTela.setStatusObsolescencia((comboObsoleto.getSelectedIndex() -1 != 0));
+				if(campoID.getText().equals("")) {
+					materialNaTela.salvaMaterial();
+				}else {
+					materialNaTela.setIdMaterial((int) Double.parseDouble(campoID.getText()));
+					materialNaTela.editaMaterial();
+				}
+				
+				campoID.setText(materialNaTela.getIdMaterial() + "");
+				campoIDEstatico.setText(materialNaTela.getIdMaterial() + "");
 
+		        campoNome.setText(materialNaTela.getNomeMaterial());
+		        campoNivelEstoque.setText(materialNaTela.getNivelEstoque() + "");
+		        campoUnidadeEstoque.setText(materialNaTela.getUnidadeEstoque());
+		        campoPontoRessuprimento.setText(materialNaTela.getPontoRessuprimento() + "");
+		        comboObsoleto.setEnabled(true);
+		        comboObsoleto.setSelectedIndex(materialNaTela.getStatusObsolescencia() ? 1 : 0);
+				exibeMaterial();
+			}
+		});
+		this.botaoDeletar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Materiais materialNaTela = new Materiais();
+				materialNaTela.setIdMaterial((int) Double.parseDouble(campoID.getText()));
+				materialNaTela.setNomeMaterial(campoNome.getText());
+				materialNaTela.deletaMaterial();
+				telaLimpa();
+			}
+		});
     }
+    public void exibeMaterial() {
+		botaoCriar.setVisible(false);
+		botaoPesquisar.setVisible(false);
+		botaoEditar.setVisible(true);
+		botaoLimpar.setVisible(true);
+		botaoDeletar.setVisible(true);
+		botaoSalvar.setVisible(false);
+		botaoCancelar.setVisible(false);
+
+		campoID.setVisible(false);
+		campoID.setEditable(false);
+		campoIDEstatico.setVisible(true);
+
+        campoNome.setEditable(false);
+        campoNivelEstoque.setEditable(false);
+        campoUnidadeEstoque.setEditable(false);
+        campoPontoRessuprimento.setEditable(false);
+        comboObsoleto.setEnabled(false);
+        
+        textoErro.setVisible(false);    
+    }
+    public void manejaMaterial() {
+		botaoCriar.setVisible(false);
+		botaoPesquisar.setVisible(false);
+		botaoEditar.setVisible(false);
+		botaoLimpar.setVisible(false);
+		botaoDeletar.setVisible(false);
+		botaoSalvar.setVisible(true);
+		botaoCancelar.setVisible(true);
+
+		campoID.setVisible(false);
+		campoID.setEditable(false);
+		campoIDEstatico.setVisible(true);
+		
+		campoNome.setVisible(true);
+        campoNome.setEditable(true);
+        
+        
+    }
+    public void telaLimpa() {
+		botaoCriar.setVisible(true);
+		botaoPesquisar.setVisible(true);
+		botaoEditar.setVisible(false);
+		botaoLimpar.setVisible(false);
+		botaoDeletar.setVisible(false);
+		botaoSalvar.setVisible(false);
+		botaoCancelar.setVisible(false);
+		
+		campoID.setVisible(true);
+		campoID.setEditable(true);
+		campoIDEstatico.setVisible(false);
+
+
+		campoID.setVisible(true);
+		campoID.setEditable(true);
+		campoIDEstatico.setVisible(false);
+
+        campoNome.setEditable(false);
+        campoNivelEstoque.setEditable(false);
+        campoUnidadeEstoque.setEditable(false);
+        campoPontoRessuprimento.setEditable(false);
+        comboObsoleto.setEnabled(false);
+		
+       	campoID.setText("");
+		campoIDEstatico.setText("");
+        campoNome.setText("");
+        campoNivelEstoque.setText("");
+        campoUnidadeEstoque.setText("");
+        campoPontoRessuprimento.setText("");
+        comboObsoleto.setSelectedIndex(0);
+    }
+
 }

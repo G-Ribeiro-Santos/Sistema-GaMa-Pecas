@@ -15,6 +15,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import database.DBQuery;
+import models.Produtos;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -29,14 +31,15 @@ public class TelaProduto {
     private JLabel textoStatus = new JLabel("Status Documentação:");
     private JLabel textoErro = new JLabel("Não foi possível localizar o produto");
     private JTextField campoID = new JTextField();
+    private JLabel campoIDEstatico = new JLabel("");
     private JTextField campoNome = new JTextField();
     private JTextArea  campoEspecificacoes = new JTextArea ();
     private JScrollPane scrollCampoEspecificacoes = new JScrollPane(campoEspecificacoes);
     private JComboBox<String> comboStatus = new JComboBox<>(new String[] {
-        "...", "COMPLETO", "INCOMPLETO", "PENDENTE"
+    		"PENDENTE", "COMPLETO", "INCOMPLETO"
     });
     private JLabel titulo = new JLabel("Produtos");
-
+    
     //botoes
     private JButton botaoCriar= new JButton("Criar");
     private JButton botaoEditar = new JButton("Editar");
@@ -45,10 +48,6 @@ public class TelaProduto {
     private JButton botaoSalvar = new JButton("Salvar");
     private JButton botaoCancelar = new JButton("Cancelar");
     private JButton botaoLimpar = new JButton("Limpar");
-
-    //sql
-	private DBQuery tabela = new DBQuery("Produtos", "id_produto,nome_produto,Especificacoes_tecnicas,Documentacao_status", "id_produto");
-	private String pesquisa = "SELECT * FROM Produtos";
 	private int IDProdutoDigitado;
 
     public TelaProduto() {
@@ -57,7 +56,8 @@ public class TelaProduto {
         this.janela.setLayout(null);
         this.janela.getContentPane().setBackground(Color.LIGHT_GRAY);
         this.janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
+        
+        // textos
         this.titulo.setFont(fonte);
         this.titulo.setBounds(180, 20, 400, 30);
         
@@ -73,23 +73,29 @@ public class TelaProduto {
         this.textoStatus.setBounds(50, 310, 180, 25);
         this.textoStatus.setFont(fonte2);
         
+        //campos de informação
         this.campoID.setBounds(230, 60, 300, 25);
+        this.campoIDEstatico.setBounds(230, 60, 300, 25);
+        
         this.campoNome.setBounds(230, 100, 300, 25);
         this.campoNome.setEditable(false);
+        
         this.comboStatus.setBounds(230, 310, 150, 25);
         this.comboStatus.setEditable(false);
+
         this.scrollCampoEspecificacoes.setBounds(230, 140, 300, 165);
         this.campoEspecificacoes.setLineWrap(true);
         this.campoEspecificacoes.setEditable(false);
+
+        this.textoErro.setBounds(175, 380, 200, 40);
         
-        //botões
+        //posição dos botões
         this.botaoCriar.setBounds(310, 350, 100, 40);
         this.botaoPesquisar.setBounds(200, 350, 100, 40);
-        this.textoErro.setBounds(175, 370, 200, 40);
 
-        this.botaoEditar.setBounds(310, 350, 100, 40);
-        this.botaoLimpar.setBounds(200, 350, 100, 40);
-        this.botaoDeletar.setBounds(320, 350, 100, 40);        
+        this.botaoDeletar.setBounds(140, 350, 100, 40);        
+        this.botaoEditar.setBounds(360, 350, 100, 40);
+        this.botaoLimpar.setBounds(250, 350, 100, 40);
         
         this.botaoCancelar.setBounds(310, 350, 100, 40);
         this.botaoSalvar.setBounds(200, 350, 100, 40);
@@ -108,6 +114,7 @@ public class TelaProduto {
         this.janela.add(campoNome);
         this.janela.add(comboStatus);
         this.janela.add(campoID);
+        this.janela.add(campoIDEstatico);
         this.janela.add(textoErro);
         
         this.janela.add(botaoCriar);
@@ -125,64 +132,18 @@ public class TelaProduto {
 
         this.botaoEditar.setVisible(false);
         this.botaoLimpar.setVisible(false);
-        this.botaoDeletar.setVisible(false);
-        
         this.botaoCancelar.setVisible(false);
+        this.botaoDeletar.setVisible(false);
         this.botaoSalvar.setVisible(false);
         
         this.textoErro.setVisible(false);
-		this.botaoCriar.addActionListener(new ActionListener() {
-			@Override					
-			public void actionPerformed(ActionEvent e) {
-				botaoCriar.setVisible(false);
-				botaoPesquisar.setVisible(false);
-				textoIDProduto.setVisible(false);
-				campoID.setVisible(false);
-				botaoSalvar.setVisible(true);
-				botaoCancelar.setVisible(true);
-		        campoNome.setEditable(true);
-		        campoEspecificacoes.setEditable(true);
-			}
-		});
+        
 
-		this.botaoEditar.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				botaoLimpar.setVisible(false);
-				botaoEditar.setVisible(false);
-				textoIDProduto.setVisible(false);
-				campoID.setEditable(false);
-				botaoSalvar.setVisible(true);
-				botaoCancelar.setVisible(true);
-		        campoNome.setEditable(true);
-		        campoEspecificacoes.setEditable(true);
-		        
-			}
-		});
-		
-		this.botaoCancelar.addActionListener(new ActionListener() {
-			@Override					
-			public void actionPerformed(ActionEvent e) {
-				botaoCriar.setVisible(true);
-				botaoPesquisar.setVisible(true);
-				textoIDProduto.setVisible(true);
-				campoID.setVisible(true);
-				botaoSalvar.setVisible(false);
-				botaoCancelar.setVisible(false);
-				campoNome.setEditable(false);
-		        campoEspecificacoes.setEditable(false);
-		        if(campoID.getText() == "") {
-		        campoNome.setText("");
-				campoEspecificacoes.setText("");
-		        }else {
-		        	
-		        }
-			}
-		});
 		this.campoID.addKeyListener(new KeyAdapter() {
 			public  void keyPressed(KeyEvent ke) {
-				String valorTotal = campoID.getText();
-				if((ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') ||  (ke.getKeyChar() == KeyEvent.VK_BACK_SPACE)) {
+				if(
+						(ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') ||  (ke.getKeyChar() == KeyEvent.VK_BACK_SPACE)
+						) {
 					campoID.setEditable(true);
 				}else {
 					campoID.setEditable(false);
@@ -190,50 +151,195 @@ public class TelaProduto {
 			}
 		});
 		
+		this.botaoCriar.addActionListener(new ActionListener() {
+			@Override					
+			public void actionPerformed(ActionEvent e) {
+				manejaProduto();
+			}
+		});
+		
+		this.botaoEditar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				manejaProduto();
+			}
+		});
+		
+		this.botaoCancelar.addActionListener(new ActionListener() {
+			@Override					
+			public void actionPerformed(ActionEvent e) {
+				if(campoID.getText().equals("") || campoIDEstatico.getText().equals("")) {
+					telaLimpa();
+				}else {					
+					exibeProduto();
+					Produtos produtoNaTela = new Produtos();
+		            IDProdutoDigitado = (int) Double.parseDouble(campoIDEstatico.getText());
+					produtoNaTela.setIdProduto(IDProdutoDigitado);
+					produtoNaTela.buscaProduto();
+					campoNome.setText(produtoNaTela.getNomeProduto());
+					campoEspecificacoes.setText(produtoNaTela.getEspecificacoesTecnicas());
+					comboStatus.setSelectedItem(produtoNaTela.getDocumentacaoStatus());
+				}
+			}
+		});
+		
+		this.botaoLimpar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				telaLimpa();
+			}
+		});
+		
 		this.botaoPesquisar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-	            ResultSet rs = tabela.query(pesquisa);
 				if(campoID.getText().equals("")) {
-					System.out.print("erro aqio óia");
 					textoErro.setVisible(true);
 					return;
 				}else {
 					textoErro.setVisible(false);
 				}
+				Produtos produtoNaTela = new Produtos();
 	            IDProdutoDigitado = (int) Double.parseDouble(campoID.getText());
-	            try {
-					while (rs.next()) {
-						if (rs.getInt("id_produto") == IDProdutoDigitado){
-					        campoID.setEditable(false);
-							botaoCriar.setVisible(false);
-							botaoPesquisar.setVisible(false);
-							botaoEditar.setVisible(true);
-							botaoLimpar.setVisible(true);
-							campoNome.setText(rs.getString("nome_produto"));
-							campoEspecificacoes.setText(rs.getString("Especificacoes_tecnicas"));
-							switch (rs.getString("Documentacao_status")){
-							case "COMPLETO":
-								comboStatus.setSelectedIndex(1);
-								break;
-							case "INCOMPLETO":
-								comboStatus.setSelectedIndex(2);
-								break;
-							case "PENDENTE":
-								comboStatus.setSelectedIndex(3);
-								break;
-							default:
-								comboStatus.setSelectedIndex(0);
-								break;
-							}
-						}
-					}
-
-				} catch (SQLException e1) {
-		            e1.printStackTrace();
-				}		        
+	            produtoNaTela.setIdProduto(IDProdutoDigitado);
+				produtoNaTela.buscaProduto();
+				String nomeProdutoDigitado = produtoNaTela.getNomeProduto();
+				if(!(nomeProdutoDigitado == "" || nomeProdutoDigitado == null)) {
+					exibeProduto();
+					campoIDEstatico.setText(produtoNaTela.getIdProduto() + "");
+					campoNome.setText(produtoNaTela.getNomeProduto());
+					campoEspecificacoes.setText(produtoNaTela.getEspecificacoesTecnicas());
+					comboStatus.setSelectedItem(produtoNaTela.getDocumentacaoStatus());
+				}else {
+					textoErro.setVisible(true);
+				}
 			}
 		});
-
+		
+		this.botaoSalvar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Produtos produtoNaTela = new Produtos();
+				produtoNaTela.setNomeProduto(campoNome.getText());
+				produtoNaTela.setEspecificacoesTecnicas(campoEspecificacoes.getText());
+				produtoNaTela.setDocumentacaoStatus((String) comboStatus.getSelectedItem());
+				if(campoID.getText().equals("")) {
+					produtoNaTela.salvaProduto();
+				}else {
+					produtoNaTela.setIdProduto((int) Double.parseDouble(campoID.getText()));
+					produtoNaTela.editaProduto();
+				}
+				botaoCriar.setVisible(false);
+				botaoPesquisar.setVisible(false);
+				botaoEditar.setVisible(true);
+				botaoLimpar.setVisible(true);
+				botaoDeletar.setVisible(true);
+				botaoSalvar.setVisible(false);
+				botaoCancelar.setVisible(false);
+				
+				campoID.setVisible(true);
+				campoID.setEditable(false);
+				
+				campoNome.setVisible(true);
+		        campoNome.setEditable(false);
+		        
+		        campoEspecificacoes.setVisible(true);
+		        campoEspecificacoes.setEditable(false);
+		        
+				comboStatus.setVisible(true);
+				comboStatus.setEnabled(false);
+				
+				campoID.setText(produtoNaTela.getIdProduto() + "");
+				campoNome.setText(produtoNaTela.getNomeProduto());
+				campoEspecificacoes.setText(produtoNaTela.getEspecificacoesTecnicas());
+				comboStatus.setSelectedItem(produtoNaTela.getDocumentacaoStatus());
+			}
+		});
+		this.botaoDeletar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Produtos produtoNaTela = new Produtos();
+				produtoNaTela.setIdProduto((int) Double.parseDouble(campoID.getText()));
+				produtoNaTela.setNomeProduto(campoNome.getText());
+				produtoNaTela.setEspecificacoesTecnicas(campoEspecificacoes.getText());
+				produtoNaTela.setDocumentacaoStatus((String) comboStatus.getSelectedItem());
+				produtoNaTela.deletaProduto();
+				telaLimpa();
+			}
+		});
     }
+    public void exibeProduto() {
+		botaoCriar.setVisible(false);
+		botaoPesquisar.setVisible(false);
+		botaoEditar.setVisible(true);
+		botaoLimpar.setVisible(true);
+		botaoDeletar.setVisible(true);
+		botaoSalvar.setVisible(false);
+		botaoCancelar.setVisible(false);
+		
+		campoID.setVisible(false);
+		campoID.setEditable(false);
+		campoIDEstatico.setVisible(true);
+		
+		
+		campoNome.setVisible(true);
+        campoNome.setEditable(false);
+        
+        campoEspecificacoes.setVisible(true);
+        campoEspecificacoes.setEditable(false);
+        
+		comboStatus.setVisible(true);
+		comboStatus.setEnabled(false);
+    }
+    public void manejaProduto() {
+		botaoCriar.setVisible(false);
+		botaoPesquisar.setVisible(false);
+		botaoEditar.setVisible(false);
+		botaoLimpar.setVisible(false);
+		botaoDeletar.setVisible(false);
+		botaoSalvar.setVisible(true);
+		botaoCancelar.setVisible(true);
+
+		campoID.setVisible(false);
+		campoID.setEditable(false);
+		campoIDEstatico.setVisible(true);
+		
+		campoNome.setVisible(true);
+        campoNome.setEditable(true);
+        
+        campoEspecificacoes.setVisible(true);
+        campoEspecificacoes.setEditable(true);
+        
+		comboStatus.setVisible(true);
+		comboStatus.setEnabled(true);
+    }
+    public void telaLimpa() {
+		botaoCriar.setVisible(true);
+		botaoPesquisar.setVisible(true);
+		botaoEditar.setVisible(false);
+		botaoLimpar.setVisible(false);
+		botaoDeletar.setVisible(false);
+		botaoSalvar.setVisible(false);
+		botaoCancelar.setVisible(false);
+		
+		campoID.setVisible(true);
+		campoID.setEditable(true);
+		campoIDEstatico.setVisible(false);
+
+		
+		campoNome.setVisible(true);
+        campoNome.setEditable(false);
+        
+        campoEspecificacoes.setVisible(true);
+        campoEspecificacoes.setEditable(false);
+		comboStatus.setVisible(true);
+		comboStatus.setEnabled(false);
+		
+        campoEspecificacoes.setText("");
+       	campoID.setText("");
+		campoIDEstatico.setText("");
+        campoNome.setText("");
+		comboStatus.setSelectedIndex(0);
+    }
+
 }

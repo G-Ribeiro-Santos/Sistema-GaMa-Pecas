@@ -1,4 +1,3 @@
-
 package models;
 
 import java.sql.ResultSet;
@@ -19,12 +18,20 @@ class ProcessosDAO {
 
     public int insert(Processos p) {
         try {
-            if (!p.getNomeProcesso().isEmpty() && p.getIdMaquina() != 0) {
-                String cmd = "INSERT INTO GamaPecas.Processos(idProcesso, nomeProcesso, idMaquina) VALUES ('"
-                        + p.getIdProcesso() + "', '" + p.getNomeProcesso() + "', '" + p.getIdMaquina() + "')";
-                return dbLink.executeUpdate(cmd);
+            if (!p.getNomeProcesso().isEmpty()) {
+                String cmd = "INSERT INTO Processos(Nome_Processo, id_Maquina) VALUES ('"
+                        + p.getNomeProcesso() + "', '" + p.getIdMaquina() + "')";
+                dbLink.executeUpdate(cmd);
             }
-            return 0;
+
+            ResultSet rs = null;
+            String cmd2 = "SELECT id_Processo FROM Processos WHERE Nome_Processo = '" + p.getNomeProcesso() + "'";
+            rs = dbLink.executeQuery(cmd2);
+            int ultimoID = 0;
+            while (rs.next()) {
+                ultimoID = rs.getInt(1);
+            }
+            return ultimoID;
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
@@ -33,10 +40,12 @@ class ProcessosDAO {
 
     public int update(Processos p) {
         try {
-            if (!p.getNomeProcesso().isEmpty()) {
-                String cmd = "UPDATE GamaPecas.Processos SET nomeProcesso = '" + p.getNomeProcesso() +
-                             "', idMaquina = '" + p.getIdMaquina() + "' WHERE idProcesso = '" + p.getIdProcesso() + "'";
-                return dbLink.executeUpdate(cmd);
+            if (!p.getNomeProcesso().isEmpty() && p.getIdProcesso() != 0) {
+                String cmd = "UPDATE Processos SET Nome_Processo = '" + p.getNomeProcesso()
+                        + "', id_Maquina = '" + p.getIdMaquina()
+                        + "' WHERE id_Processo = '" + p.getIdProcesso() + "'";
+                dbLink.executeUpdate(cmd);
+                return p.getIdProcesso();
             }
             return 0;
         } catch (SQLException e) {
@@ -48,7 +57,7 @@ class ProcessosDAO {
     public int delete(Processos p) {
         try {
             if (p.getIdProcesso() != 0) {
-                String cmd = "DELETE FROM GamaPecas.Processos WHERE idProcesso = '" + p.getIdProcesso() + "'";
+                String cmd = "DELETE FROM Processos WHERE id_Processo = '" + p.getIdProcesso() + "'";
                 return dbLink.executeUpdate(cmd);
             }
             return 0;
@@ -58,16 +67,17 @@ class ProcessosDAO {
         }
     }
 
-    public ResultSet list(String where) {
-        String cmd = "SELECT * FROM GamaPecas.Processos";
+    public ResultSet listarPorID(String where) {
+        String cmd = "SELECT * FROM Processos";
         if (!where.isEmpty()) {
             cmd += " WHERE " + where;
         }
+        ResultSet rs = null;
         try {
-            return dbLink.executeQuery(cmd);
+            rs = dbLink.executeQuery(cmd);
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
+        return rs;
     }
 }

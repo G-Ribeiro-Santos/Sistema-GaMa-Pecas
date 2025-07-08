@@ -20,7 +20,7 @@ public class UsuariosDAO {
 		try {
 			int linesAfected = 0;
 			if (usuarioRecebido.getLoginUsuario() != "" && usuarioRecebido.getSenhaUsuario() != "") {
-				String cmd =  " INSERT INTO GamaPecas.Usuarios(login_usuario, senha_usuario) "
+				String cmd =  " INSERT INTO Usuario(login_usuario, senha_usuario) "
 						+ "VALUES ('";
 				cmd +=	usuarioRecebido.getLoginUsuario() + "', '" +
 						usuarioRecebido.getSenhaUsuario() + "')";
@@ -39,7 +39,7 @@ public class UsuariosDAO {
 		int linesAffected = 0;
 		try {
 			if (usuarioRecebido.getLoginUsuario() != "" && usuarioRecebido.getSenhaUsuario() != "") {
-				String cmd = "UPDATE GamaPecas.Usuarios SET senha_usuario ='" + usuarioRecebido.getSenhaUsuario() + "'";
+				String cmd = "UPDATE Usuario SET senha_usuario ='" + usuarioRecebido.getSenhaUsuario() + "'";
 				cmd += " WHERE login_usuario =" + usuarioRecebido.getLoginUsuario();
 				linesAffected = dbLink.executeUpdate(cmd);
 				return linesAffected;
@@ -55,7 +55,7 @@ public class UsuariosDAO {
 		try {
 			int linesAfected = 0;
 			if (user.getLoginUsuario() != "") {
-				String cmd =  " DELETE FROM GamaPecas.Usuarios ";
+				String cmd =  " DELETE FROM Usuario ";
 				cmd += " WHERE login_usuario = " + user.getLoginUsuario();
 				linesAfected = dbLink.executeUpdate(cmd);
 				return linesAfected;
@@ -69,7 +69,7 @@ public class UsuariosDAO {
 	}
 
 	public ResultSet list(String where) {
-		String cmd = "SELECT * FROM GamaPecas.Usuarios";
+		String cmd = "SELECT * FROM Usuario";
 		if (!where.isEmpty()) {
 			cmd += " WHERE " + where;
 		}

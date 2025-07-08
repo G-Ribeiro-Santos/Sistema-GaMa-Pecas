@@ -18,12 +18,20 @@ class MaquinasDAO {
 
     public int insert(Maquinas m) {
         try {
-            if (!m.getNomeMaquina().isEmpty() && !m.getDisponibilidade().isEmpty()) {
-                String cmd = "INSERT INTO GamaPecas.Maquinas(idMaquina, nomeMaquina, disponibilidade) VALUES ('"
-                        + m.getIdMaquina() + "', '" + m.getNomeMaquina() + "', '" + m.getDisponibilidade() + "')";
-                return dbLink.executeUpdate(cmd);
+            if (!m.getNomeMaquina().isEmpty()) {
+                String cmd = "INSERT INTO Maquinas(Nome_Maquina, Disponibilidade) VALUES ('"
+                        + m.getNomeMaquina() + "', '" + m.getDisponibilidade() + "')";
+                dbLink.executeUpdate(cmd);
             }
-            return 0;
+            
+            ResultSet rs = null;
+            String cmd2 = "SELECT id_Maquina FROM Maquinas WHERE Nome_Maquina = '" + m.getNomeMaquina() + "'";
+            rs = dbLink.executeQuery(cmd2);
+            int ultimoID = 0;
+            while (rs.next()) {
+                ultimoID = rs.getInt(1);
+            }
+            return ultimoID;
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
@@ -32,11 +40,12 @@ class MaquinasDAO {
 
     public int update(Maquinas m) {
         try {
-            if (!m.getNomeMaquina().isEmpty() && !m.getDisponibilidade().isEmpty()) {
-                String cmd = "UPDATE GamaPecas.Maquinas SET nomeMaquina = '" + m.getNomeMaquina() +
-                             "', disponibilidade = '" + m.getDisponibilidade() +
-                             "' WHERE idMaquina = '" + m.getIdMaquina() + "'";
-                return dbLink.executeUpdate(cmd);
+            if (!m.getNomeMaquina().isEmpty() && m.getIdMaquina() != 0) {
+                String cmd = "UPDATE Maquinas SET Nome_Maquina = '" + m.getNomeMaquina()
+                        + "', Disponibilidade = '" + m.getDisponibilidade()
+                        + "' WHERE id_Maquina = '" + m.getIdMaquina() + "'";
+                dbLink.executeUpdate(cmd);
+                return m.getIdMaquina();
             }
             return 0;
         } catch (SQLException e) {
@@ -48,7 +57,7 @@ class MaquinasDAO {
     public int delete(Maquinas m) {
         try {
             if (m.getIdMaquina() != 0) {
-                String cmd = "DELETE FROM GamaPecas.Maquinas WHERE idMaquina = '" + m.getIdMaquina() + "'";
+                String cmd = "DELETE FROM Maquinas WHERE id_Maquina = '" + m.getIdMaquina() + "'";
                 return dbLink.executeUpdate(cmd);
             }
             return 0;
@@ -58,16 +67,17 @@ class MaquinasDAO {
         }
     }
 
-    public ResultSet list(String where) {
-        String cmd = "SELECT * FROM GamaPecas.Maquinas";
+    public ResultSet listarPorID(String where) {
+        String cmd = "SELECT * FROM Maquinas";
         if (!where.isEmpty()) {
             cmd += " WHERE " + where;
         }
+        ResultSet rs = null;
         try {
-            return dbLink.executeQuery(cmd);
+            rs = dbLink.executeQuery(cmd);
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
+        return rs;
     }
 }

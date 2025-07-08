@@ -9,9 +9,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import database.DBQuery;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import models.Usuarios;
 
 public class TelaLogin {
 	
@@ -27,8 +25,6 @@ public class TelaLogin {
 	private Font fonte2 = new Font("Arial", Font.BOLD, 24);
 	private Font fonte3 = new Font("Arial", Font.BOLD, 20);
 	private Font fonteErro = new Font("Arial", Font.BOLD, 14);
-	private DBQuery Tabela = new DBQuery("Usuario", "login_usuario,senha_usuario", "login_usuario");
-	private String Pesquisa = "SELECT * FROM Usuario";
 	private String LoginDigitado = "";
 	private String SenhaDigitado = "";
 
@@ -82,19 +78,14 @@ public class TelaLogin {
 			public void actionPerformed(ActionEvent e) {
 				LoginDigitado = campoUsuario.getText();
 				SenhaDigitado = new String(campoSenha.getPassword());
-
-		        try {
-		            ResultSet rs = Tabela.query(Pesquisa);
-		            while (rs.next()) {
-		            	if (rs.getString("login_usuario").equals(LoginDigitado) && rs.getString("senha_usuario").equals(SenhaDigitado)) {
-		                	TelaInicial home = new TelaInicial();
-		                	janela.removeAll();
-		                }
-		            }
+				Usuarios userDigitado = new Usuarios(LoginDigitado, SenhaDigitado);
+				if(userDigitado.validaUsuario()) {
+                	TelaInicial home = new TelaInicial();
+                	janela.removeAll();
+                	janela.setVisible(false);
+				}else {
 		    		textoErro.setVisible(true);
-		        } catch (SQLException e1) {
-		            e1.printStackTrace();
-		        }
+				}
 			}
 		});
 	}

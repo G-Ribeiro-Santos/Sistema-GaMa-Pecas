@@ -19,11 +19,19 @@ class ProdutosDAO {
     public int insert(Produtos p) {
         try {
             if (!p.getNomeProduto().isEmpty()) {
-                String cmd = "INSERT INTO GamaPecas.Produtos(idProduto, nomeProduto, especificacoesTecnicas, documentacaoStatus) VALUES ('"
-                        + p.getIdProduto() + "', '" + p.getNomeProduto() + "', '" + p.getEspecificacoesTecnicas() + "', '" + p.getDocumentacaoStatus() + "')";
-                return dbLink.executeUpdate(cmd);
+                String cmd = "INSERT INTO Produtos(nome_produto, Especificacoes_tecnicas, Documentacao_status) VALUES ('"
+                        + p.getNomeProduto() + "', '" + p.getEspecificacoesTecnicas() + "', '" + p.getDocumentacaoStatus() + "')";
+                dbLink.executeUpdate(cmd);
             }
-            return 0;
+            
+            ResultSet rs = null;
+            String cmd2 = "SELECT id_produto FROM Produtos WHERE nome_produto = '" + p.getNomeProduto() + "'";
+            rs = dbLink.executeQuery(cmd2);
+            int ultimoID = 0;
+            while(rs.next()) {
+            ultimoID = rs.getInt(1);
+            }
+            return ultimoID;
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
@@ -32,12 +40,13 @@ class ProdutosDAO {
 
     public int update(Produtos p) {
         try {
-            if (!p.getNomeProduto().isEmpty()) {
-                String cmd = "UPDATE GamaPecas.Produtos SET nomeProduto = '" + p.getNomeProduto() +
-                             "', especificacoesTecnicas = '" + p.getEspecificacoesTecnicas() +
-                             "', documentacaoStatus = '" + p.getDocumentacaoStatus() +
-                             "' WHERE idProduto = '" + p.getIdProduto() + "'";
-                return dbLink.executeUpdate(cmd);
+            if (!p.getNomeProduto().isEmpty() && p.getIdProduto() != 0) {
+                String cmd = "UPDATE Produtos SET nome_produto = '" + p.getNomeProduto() +
+                             "', Especificacoes_tecnicas = '" + p.getEspecificacoesTecnicas() +
+                             "', Documentacao_status = '" + p.getDocumentacaoStatus();
+                cmd += "' WHERE id_produto = '" + p.getIdProduto() + "'";
+                dbLink.executeUpdate(cmd);
+                return p.getIdProduto();
             }
             return 0;
         } catch (SQLException e) {
@@ -49,7 +58,7 @@ class ProdutosDAO {
     public int delete(Produtos p) {
         try {
             if (p.getIdProduto() != 0) {
-                String cmd = "DELETE FROM GamaPecas.Produtos WHERE idProduto = '" + p.getIdProduto() + "'";
+                String cmd = "DELETE FROM Produtos WHERE id_produto = '" + p.getIdProduto() + "'";
                 return dbLink.executeUpdate(cmd);
             }
             return 0;
@@ -59,16 +68,17 @@ class ProdutosDAO {
         }
     }
 
-    public ResultSet list(String where) {
-        String cmd = "SELECT * FROM GamaPecas.Produtos";
+    public ResultSet listarPorID(String where) {
+        String cmd = "SELECT * FROM Produtos";
         if (!where.isEmpty()) {
             cmd += " WHERE " + where;
         }
+		ResultSet rs = null;
         try {
-            return dbLink.executeQuery(cmd);
+            rs = dbLink.executeQuery(cmd);
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
-        }
+        }           
+        return rs;
     }
 }
