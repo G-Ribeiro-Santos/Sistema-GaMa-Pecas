@@ -6,11 +6,11 @@ import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import controle.telas.TelaFichaTecnica;
-import controle.telas.TelaMateriais;
-import controle.telas.TelaMaquinas;
-import controle.telas.TelaProcessos;
-import controle.telas.TelaProduto;
+import view.telas.TelaFichaTecnica;
+import view.telas.TelaMaquinas;
+import view.telas.TelaMateriais;
+import view.telas.TelaProcessos;
+import view.telas.TelaProduto;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;

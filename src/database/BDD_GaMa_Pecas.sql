@@ -9,7 +9,7 @@ CREATE TABLE Usuario (
 INSERT INTO Usuario(login_usuario, senha_usuario)
 VALUES 
 ("dummy1", "dummy1"),
-("admin", "admin");
+("dummy2", "dummy2");
 
 SELECT * FROM Usuario;
 
